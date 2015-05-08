@@ -1,1 +1,17 @@
-name, date, description
+Name:	James Tremper
+Date:	2015-05-08
+Desc:	Lab 4 Submission
+
+Current Status: I believe the code is mostly correct, but there are some errors that I haven't hunted down yet.
+
+General idea: Replace the color buffer with a texture coordinate buffer, and pull the color from there instead. Some key sections are:
+	In function initBuffers()
+		lines 257 - 302: Setting up the texture coordinate buffer
+	Function handleLoadedTexture (texture)
+		lines 356 - 364
+	Function initTexture()
+		lines 370 - 378
+	In function drawScene()
+		lines 403 - 410: Actually use the texture
+
+	Altered the vertex and fragment shaders to use the texture colors

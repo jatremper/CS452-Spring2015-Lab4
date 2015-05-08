@@ -1,29 +1,73 @@
-+<!DOCTYPE html>
+<!--
+	Name:	James Tremper
+	Date:	2015-05-07
+	Desc:	Lab 4 Submission
+
+	References:
+		Learning WebGL - Lesson 4 - http://learningwebgl.com/blog/?p=370
+		Learning WebGL - Lesson 7 - http://learningwebgl.com/blog/?p=684
+  -->
+
 <html>
 <head>
+	<title>Computer Graphics - Lab 4</title>
+	<script type="text/javascript" src="../common/webgl-utils.js"></script>
+	<script type="text/javascript" src="../common/MV.js"></script>
+	<script type="text/javascript" src="lab4.js"></script>
 
-<script id="vertex-shader" type="x-shader/x-vertex">
-attribute vec4 vPosition;
-void main() {
-  gl_Position = vPosition;
-}
-</script>
+	<script id="shader-vs" type="x-shader/x-vertex">
+		attribute vec3 aVertexPosition;
+		attribute vec4 aVertexColor;
+		attribute vec3 aVertexNormal;
+		attribute vec2 aTextureCoord;
 
-<script id="fragment-shader" type="x-shader/x-fragment">
-precision mediump float;
-void main() {
-  gl_FragColor = vec4( 1.0, 1.0, 1.0, 1.0 );
-}
-</script>
+		uniform mat4 uMVMatrix;
+		uniform mat4 uPMatrix;
+		uniform mat3 uNMatrix;
 
-<script type="text/javascript" src="../Common/webgl-utils.js"></script>
-<script type="text/javascript" src="../Common/initShaders.js"></script>
-<script type="text/javascript" src="../Common/MV.js"></script>
-<script type="text/javascript" src="lab4.js"></script>
+		uniform vec3 uAmbientColor;
+		uniform vec3 uLightingDirection;
+		uniform vec3 uDirectionalColor;
+
+		varying vec4 vColor;
+		varying vec3 vLightWeighting;
+
+		varying vec2 vTextureCoord;
+
+		void main(void)
+		{
+		// QUESTION: Whats the last multiplication for?
+			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			vColor = aVertexColor;
+
+			vec3 transformedNormal = uNMatrix * aVertexNormal;
+			float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+			vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+
+			vTextureCoord = aTextureCoord;
+		}
+	</script>
+
+	<script id="shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+
+		varying vec4 vColor;
+		varying vec3 vLightWeighting;
+
+		varying vec2 vTextureCoord;
+
+		uniform sampler2D uSampler;
+
+		void main(void)
+		{
+			vec4 textColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+			gl_FragColor = vec4(textColor.rgb * vLightWeighting, vColor.a);
+		}
+	</script>
+
 </head>
+
 <body>
-<canvas id="gl-canvas" width="512" height="512">
-Oops ... your browser doesn't support the HTML5 canvas element
-</canvas>
-+</body>
-+</html>
+	<canvas id="gl-canvas" width="512" height="512">If you can see this, something has gone wrong.</canvas>
+</body>
+</html>
